@@ -53,3 +53,8 @@ The system follows an MVC architecture based around files for SQLAlchemy models 
 5. Run the server.
 
        flask run
+
+## Unit Tests
+To run unit tests, execute the following command:
+
+        pytest -v --cov=app
