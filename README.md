@@ -47,14 +47,12 @@ The system follows an MVC architecture based around files for SQLAlchemy models 
        pip install -r requirements.txt
 4. Set up the database.
 
-       flask db init
-       flask db migrate
-       flask db upgrade
-5. Run the server.
+       python init_db.py
+6. Run the server.
 
-       flask run
+       python run.py
 
 ## Unit Tests
 To run unit tests, execute the following command:
 
-        pytest -v --cov=app
+       pytest -v --cov=app
