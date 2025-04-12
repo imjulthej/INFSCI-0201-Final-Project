@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="user-profile">
+    <h1 class="mb-4">Your Profile</h1>
+
+        <div class="profile-sections">
+            <section class="upcoming-events">
+                <h2>Your Upcoming Events</h2>
+                {% if upcoming_events %}
+                    <div class="events-grid">
+                        {% for event in upcoming_events %}
+                            {% include "events/_event_card.html" %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>You have no upcoming events.</p>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary">Browse Events</a>
+                {% endif %}
+            </section>
+            
+            <section class="past-events">
+                <h2>Your Past Events</h2>
+                {% if past_events %}
+                    <div class="events-grid compact">
+                        {% for event in past_events %}
+                            <div class="event-card compact">
+                                <h3><a href="{{ url_for('main.event_detail', event_id=event.id) }}">{{ event.title }}</a></h3>
+                                <p class="event-meta">
+                                    {{ event.start_time.strftime('%b %d, %Y') }} • 
+                                    {{ event.attendees|length }} attendees
+                                </p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>You haven't attended any events yet.</p>
+                {% endif %}
+            </section>
+            
+            <section class="recommended-events">
+                <h2>Recommended Events</h2>
+                <p>Based on your subscriptions</p>
+                
+                {% if recommended_events %}
+                    <div class="events-grid">
+                        {% for event in recommended_events %}
+                            {% include "events/_event_card.html" %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No recommendations yet. Subscribe to organizers or tags to get recommendations.</p>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="user-settings">
+        <h1>Account Settings</h1>
+        
+        <form action="{{ url_for('main.user_settings') }}" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.username.label }}
+                {{ form.username(class="form-control") }}
+                {% for error in form.username.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.email.label }}
+                {{ form.email(class="form-control") }}
+                {% for error in form.email.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.password.label }}
+                {{ form.password(class="form-control") }}
+                {% for error in form.password.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.password2.label }}
+                {{ form.password2(class="form-control") }}
+                {% for error in form.password2.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+        
+        <div class="danger-zone">
+            <h3>Danger Zone</h3>
+            <form action="{{ url_for('main.delete_account') }}" method="post" 
+                  onsubmit="return confirm('Are you sure you want to delete your account? This cannot be undone.');">
+                <button type="submit" class="btn btn-danger">Delete Account</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
