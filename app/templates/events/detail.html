@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="event-detail">
+    <h1 class="display-4 event-title">{{ event.title }}</h1>
+
+    <div class="event-header">
+        {% if event.image_url %}
+            <img src="{{ event.image_url }}" alt="{{ event.title }}" class="event-detail-image">
+        {% endif %}
+
+        <div class="event-meta">
+            <p><strong>Type:</strong> {{ event.event_type|capitalize }}</p>
+            <p><strong>Organizer:</strong> {{ event.organizer.name }}</p>
+            <p><strong>Date & Time:</strong> 
+                {{ event.start_time.strftime('%A, %B %d, %Y at %I:%M %p') }} 
+                to {{ event.end_time.strftime('%I:%M %p') }}
+            </p>
+            <p><strong>Location:</strong> {{ event.location }}</p>
+            <p><strong>Attendees:</strong> {{ event.attendees|length }}</p>
+
+            <div class="event-tags">
+                {% for tag in event.tags.split(',') %}
+                    <span class="tag">
+                        <a href="{{ url_for('main.search_events', tag=tag.strip()) }}">
+                            {{ tag.strip() }}
+                        </a>
+                    </span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div id="map" 
+         data-lat="{{ event.latitude }}" 
+         data-lng="{{ event.longitude }}"
+         data-location="{{ event.location }}"
+         style="height: 300px; margin: 2rem 0;">
+    </div>
+
+    <div class="mb-3">
+        <a href="{{ url_for('main.download_calendar_event', event_id=event.id) }}" class="btn btn-secondary">
+            Add to Calendar
+        </a>
+    </div>
+
+    {% if current_user.is_authenticated %}
+        {% if not is_attending %}
+            <form action="{{ url_for('main.attend_event', event_id=event.id) }}" method="POST">
+                <button type="submit" class="btn btn-primary">Join Event</button>
+            </form>
+        {% else %}
+            <form action="{{ url_for('main.cancel_attendance', event_id=event.id) }}" method="POST">
+                <button type="submit" class="btn btn-danger">Cancel Attendance</button>
+            </form>
+        {% endif %}
+    {% else %}
+        <p><a href="{{ url_for('main.login') }}">Log in</a> to join this event.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function initEventMap() {
+        const mapElement = document.getElementById('map');
+        const lat = parseFloat(mapElement.dataset.lat);
+        const lng = parseFloat(mapElement.dataset.lng);
+        const location = mapElement.dataset.location;
+
+        if (!lat || !lng) return;
+
+        const map = new google.maps.Map(mapElement, {
+            center: { lat, lng },
+            zoom: 15
+        });
+
+        new google.maps.Marker({
+            position: { lat, lng },
+            map,
+            title: location
+        });
+    }
+</script>
+<script
+    src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&callback=initEventMap"
+    async defer>
+</script>
+{% endblock %}

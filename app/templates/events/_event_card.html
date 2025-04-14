@@ -1,0 +1,24 @@
+<div class=" card event-card">
+    {% if event.image_url %}
+        <img src="{{ event.image_url }}" alt="{{ event.title }}" class="event-image">
+    {% endif %}
+    <div class="event-info">
+        <h2><a href="{{ url_for('main.event_detail', event_id=event.id) }}">{{ event.title }}</a></h2>
+        <p class="event-meta">
+            <i class="bi bi-tag me-1"></i>
+            <span class="event-type">{{ event.event_type|capitalize }}</span><br>
+            <i class="bi bi-calendar-event me-1"></i>
+            <span class="event-date">{{ event.start_time.strftime('%b %d, %Y %I:%M %p') }}</span>
+        </p>
+        <p class="event-location">
+            <i class="bi bi-geo-alt me-1"></i>
+            {{ event.location }}
+        </p>        
+        <p class="event-description">{{ event.description|truncate(150) }}</p>
+        <div class="event-tags">
+            {% for tag in event.tags.split(',') %}
+                <span class="tag"><a href="{{ url_for('main.search_events', tag=tag.strip()) }}">{{ tag.strip() }}</a></span>
+            {% endfor %}
+        </div>
+    </div>
+</div>

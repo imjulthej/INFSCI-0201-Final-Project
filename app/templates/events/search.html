@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Search Events{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Search Events</h1>
+
+{% if tag_filter %}
+  <div class="alert alert-info">
+    Showing results for tag: <strong>{{ tag_filter }}</strong>
+    <a href="{{ url_for('main.search_events') }}" class="ms-2">Clear filter</a>
+  </div>
+{% endif %}
+
+<form method="GET" action="{{ url_for('main.search_events') }}" class="row mb-4 g-2">
+  <div class="col-md-4">
+    <input type="text" name="q" class="form-control" placeholder="Search events..." value="{{ query }}">
+  </div>
+  <div class="col-md-3">
+    <select name="type" class="form-select">
+      <option value="">All Types</option>
+      <option value="Conference" {% if selected_type == 'Conference' %}selected{% endif %}>Conference</option>
+      <option value="Workshop" {% if selected_type == 'Workshop' %}selected{% endif %}>Workshop</option>
+      <option value="Meetup" {% if selected_type == 'Meetup' %}selected{% endif %}>Meetup</option>
+      <option value="Seminar" {% if selected_type == 'Seminar' %}selected{% endif %}>Seminar</option>
+      <option value="Concert" {% if selected_type == 'Concert' %}selected{% endif %}>Concert</option>
+      <option value="Exhibition" {% if selected_type == 'Exhibition' %}selected{% endif %}>Exhibition</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+  </div>
+  <div class="col-md-2">
+    <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+  </div>
+  <div class="col-md-4">
+    <input type="text" name="location" class="form-control" placeholder="City or Address" value="{{ location }}">
+  </div>
+  <div class="col-md-2">
+    <select name="radius" class="form-select">
+      <option value="">Any Distance</option>
+      <option value="5" {% if radius == '5' %}selected{% endif %}>Within 5 mi</option>
+      <option value="10" {% if radius == '10' %}selected{% endif %}>Within 10 mi</option>
+      <option value="25" {% if radius == '25' %}selected{% endif %}>Within 25 mi</option>
+      <option value="50" {% if radius == '50' %}selected{% endif %}>Within 50 mi</option>
+    </select>
+  </div>
+  <div class="col-md-3">
+    <input type="text" name="tag" class="form-control" placeholder="Filter by tag" value="{{ tag_filter }}">
+  </div>  
+  <div class="col-md-1">
+    <button type="submit" class="btn btn-primary w-100">Search</button>
+  </div>
+</form>
+
+{% if events %}
+  <div class="row row-cols-1 row-cols-md-2 g-4">
+    {% for event in events %}
+      <div class="col">
+        <div class="card h-100">
+          {% if event.image_url %}
+            <img src="{{ event.image_url }}" class="card-img-top" alt="{{ event.title }}">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ event.title }}</h5>
+            <p class="card-text">{{ event.description[:120] }}...</p>
+            <p><strong>Date:</strong> {{ event.start_time.strftime('%B %d, %Y') }}</p>
+            <a href="{{ url_for('main.event_detail', event_id=event.id) }}" class="btn btn-outline-primary">View</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    {% if pagination.pages > 1 %}
+    <nav aria-label="Search results pages">
+      <ul class="pagination justify-content-center mt-4">
+        {% if pagination.has_prev %}
+        <li class="page-item">
+          <a class="page-link"
+             href="{{ url_for('main.search_events', page=pagination.prev_num, q=query, type=selected_type, start_date=start_date, end_date=end_date, location=location, radius=radius) }}">
+            Previous
+          </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+    
+        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+          {% if page_num %}
+            {% if page_num == pagination.page %}
+              <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+            {% else %}
+              <li class="page-item">
+                <a class="page-link"
+                   href="{{ url_for('main.search_events', page=page_num, q=query, type=selected_type, start_date=start_date, end_date=end_date, location=location, radius=radius) }}">
+                  {{ page_num }}
+                </a>
+              </li>
+            {% endif %}
+          {% else %}
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+          {% endif %}
+        {% endfor %}
+    
+        {% if pagination.has_next %}
+        <li class="page-item">
+          <a class="page-link"
+             href="{{ url_for('main.search_events', page=pagination.next_num, q=query, type=selected_type, start_date=start_date, end_date=end_date, location=location, radius=radius) }}">
+            Next
+          </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}    
+  </div>
+{% else %}
+  <p class="text-muted mt-4">No events found.</p>
+{% endif %}
+{% endblock %}

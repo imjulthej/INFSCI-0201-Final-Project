@@ -1,0 +1,14 @@
+{% extends "events/create.html" %}
+
+{% block content %}
+    <h1>Edit Event: {{ event.title }}</h1>
+
+    <form action="{{ url_for('main.edit_event', event_id=event.id) }}" method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        {% include 'events/_event_form_fields.html' %}
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Update Event</button>
+            <a href="{{ url_for('main.event_detail', event_id=event.id) }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+{% endblock %}

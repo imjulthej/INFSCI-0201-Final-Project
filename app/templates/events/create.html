@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+{% endblock %}
+
+{% block content %}
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {% include 'events/_event_form_fields.html' %}
+        <button type="submit" class="btn btn-primary">Create Event</button>
+    </form>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/maps.js') }}"></script>
+    <script>
+        let map, marker, autocomplete, geocoder;
+        
+        function initAutocomplete() {
+            const input = document.getElementById('autocomplete-location');
+            const latInput = document.getElementById('latitude');
+            const lngInput = document.getElementById('longitude');
+            const mapContainer = document.getElementById('map-preview');
+        
+            geocoder = new google.maps.Geocoder();
+        
+            autocomplete = new google.maps.places.Autocomplete(input);
+            autocomplete.addListener('place_changed', function () {
+                const place = autocomplete.getPlace();
+                if (!place.geometry) return;
+        
+                const location = place.geometry.location;
+                const lat = location.lat();
+                const lng = location.lng();
+        
+                latInput.value = lat;
+                lngInput.value = lng;
+        
+                updateMap(lat, lng);
+            });
+        
+            map = new google.maps.Map(mapContainer, {
+                center: { lat: 20, lng: 0 },
+                zoom: 2
+            });
+        
+            marker = new google.maps.Marker({ map });
+        
+            // fallback: geocode typed text on blur if no place selected
+            input.addEventListener('blur', function () {
+                if (!latInput.value || !lngInput.value) {
+                    geocoder.geocode({ address: input.value }, function (results, status) {
+                        if (status === 'OK') {
+                            const loc = results[0].geometry.location;
+                            latInput.value = loc.lat();
+                            lngInput.value = loc.lng();
+                            updateMap(loc.lat(), loc.lng());
+                        }
+                    });
+                }
+            });
+        }
+        
+        function updateMap(lat, lng) {
+            const pos = { lat, lng };
+            map.setCenter(pos);
+            map.setZoom(15);
+            marker.setPosition(pos);
+        }
+        </script>
+        
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&libraries=places&callback=initAutocomplete"
+        async defer>
+    </script>    
+{% endblock %}

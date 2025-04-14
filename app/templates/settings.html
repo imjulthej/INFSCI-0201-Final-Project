@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2>Account Settings</h2>
+  <form method="POST" action="{{ url_for('main.user_settings') }}">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+      {{ form.username.label }}<br>
+      {{ form.username(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.email.label }}<br>
+      {{ form.email(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.password.label }}<br>
+      {{ form.password(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.confirm_password.label }}<br>
+      {{ form.confirm_password(class="form-control") }}
+    </div>
+    <div class="mb-3">
+      {{ form.submit(class="btn btn-primary") }}
+    </div>
+  </form>
+
+  <hr>
+
+  <form action="{{ url_for('main.delete_account') }}" method="POST">
+    <button class="btn btn-danger" type="submit">Delete Account</button>
+  </form>
+</div>
+{% endblock %}
