@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.tab {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    font-weight: 500;
+}
+
+.tab.active {
+    border-color: #3498db;
+    color: #3498db;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Manager Dashboard</h1>
+
+<div class="dashboard-section">
+    <a href="{{ url_for('main.create_event') }}" class="btn btn-primary">+ Create New Event</a>
+    <a href="{{ url_for('main.batch_events') }}" class="btn btn-outline-primary">📁 Import Events (CSV)</a>
+    <a href="{{ url_for('main.export_events_csv') }}" class="btn btn-success mb-3">
+        Export My Events as CSV
+    </a>
+</div>
+
+<div class="tabs">
+    <div class="tab active" data-tab="current">Current Events</div>
+    <div class="tab" data-tab="past">Past Events</div>
+    <div class="tab" data-tab="cancelled">Cancelled Events</div>
+</div>
+
+<div id="current" class="tab-content active">
+    {% if current_events %}
+        <div class="events-grid">
+            {% for event in current_events %}
+                <div class="event-card">
+                    {% if event.image_url %}
+                        <img src="{{ event.image_url }}" alt="{{ event.title }}" class="event-image">
+                    {% endif %}
+                    <div class="event-info">
+                        <h3>{{ event.title }}</h3>
+                        <p class="event-meta">
+                            {{ event.event_type|capitalize }} •
+                            {{ event.start_time.strftime('%b %d, %Y %I:%M %p') }}
+                        </p>
+                        <p>{{ event.location }}</p>
+                        <div class="event-actions">
+                            <a href="{{ url_for('main.event_detail', event_id=event.id) }}" class="btn btn-secondary">View</a>
+                            <a href="{{ url_for('main.edit_event', event_id=event.id) }}" class="btn btn-outline-primary">Edit</a>
+                            <a href="{{ url_for('main.export_attendees_csv', event_id=event.id) }}" class="btn btn-outline-success">
+                                Export Attendees
+                            </a>                            
+                            <form action="{{ url_for('main.delete_event', event_id=event.id) }}" method="POST" style="display:inline;">
+                                <button class="btn btn-danger" onclick="return confirm('Are you sure you want to permanently delete this event?')">Delete</button>
+                            </form>
+                        </div>
+                        
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You have no current events.</p>
+    {% endif %}
+</div>
+
+<div id="past" class="tab-content">
+    {% if past_events %}
+        <ul>
+            {% for event in past_events %}
+                <li>{{ event.title }} ({{ event.start_time.strftime('%b %d, %Y') }})</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No past events found.</p>
+    {% endif %}
+</div>
+
+<div id="cancelled" class="tab-content">
+    {% if cancelled_events %}
+        <ul>
+            {% for event in cancelled_events %}
+                <li>{{ event.title }} ({{ event.start_time.strftime('%b %d, %Y') }})</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No cancelled events found.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab, .tab-content').forEach(el => el.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+    });
+});
+</script>
+{% endblock %}

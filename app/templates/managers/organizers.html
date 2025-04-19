@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Manage Organizers</h2>
+
+<a href="{{ url_for('main.create_organizer') }}" class="btn btn-primary mb-3">+ New Organizer</a>
+
+<form method="GET" class="row g-2 mb-3">
+  <div class="col-md-4">
+    <input type="text" name="q" class="form-control" placeholder="Search by name..." value="{{ search }}">
+  </div>
+  <div class="col-md-3">
+    <select name="sort" class="form-select">
+      <option value="name" {% if sort == 'name' %}selected{% endif %}>Sort by Name</option>
+      <option value="users" {% if sort == 'users' %}selected{% endif %}>Sort by Assigned Users</option>
+      <option value="events" {% if sort == 'events' %}selected{% endif %}>Sort by Events</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button class="btn btn-outline-primary w-100">Apply</button>
+  </div>
+</form>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>User/Event Count</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for organizer in organizers %}
+<tr>
+  <td>{{ organizer.name }}</td>
+  <td>{{ organizer.description or '' }}</td>
+  
+  <td>
+    {{ organizer.users.count() }} users<br>
+    {{ organizer.events.count() }} events
+  </td>
+
+  <td class="action-cell">
+    <div class="action-buttons">
+      <a href="{{ url_for('main.edit_organizer', organizer_id=organizer.id) }}" class="btn btn-sm btn-secondary w-100">Edit</a>
+
+      <form action="{{ url_for('main.delete_organizer', organizer_id=organizer.id) }}" method="POST" class="w-100" onsubmit="return confirm('Delete this organizer?')">
+        <button class="btn btn-sm btn-danger w-100">Delete</button>
+      </form>
+
+      <a href="{{ url_for('main.view_organizer_users', organizer_id=organizer.id) }}" class="btn btn-sm btn-outline-primary w-100">View Users</a>
+      <a href="{{ url_for('main.view_organizer_events', organizer_id=organizer.id) }}" class="btn btn-sm btn-outline-primary w-100">View Events</a>
+    </div>
+  </td>
+</tr>
+{% endfor %}
+  </tbody>
+</table>
+{% endblock %}

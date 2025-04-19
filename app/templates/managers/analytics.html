@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Event Analytics</h2>
+<form method="GET" class="row g-2 mb-4">
+  <div class="col-md-3">
+    <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+  </div>
+  <div class="col-md-3">
+    <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+  </div>
+  <div class="col-md-3">
+    <button class="btn btn-primary w-100" type="submit">Apply Filter</button>
+  </div>
+  <div class="col-md-3">
+    <a href="{{ url_for('main.manager_analytics') }}" class="btn btn-secondary w-100">Clear</a>
+  </div>
+</form>
+
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-bg-primary mb-3">
+      <div class="card-body text-center">
+        <h5 class="card-title">Total Events</h5>
+        <p class="display-6">{{ total_events }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-bg-success mb-3">
+      <div class="card-body text-center">
+        <h5 class="card-title">Attendees</h5>
+        <p class="display-6">{{ total_attendees }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-bg-info mb-3">
+      <div class="card-body text-center">
+        <h5 class="card-title">Upcoming</h5>
+        <p class="display-6">{{ upcoming_count }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-bg-secondary mb-3">
+      <div class="card-body text-center">
+        <h5 class="card-title">Past</h5>
+        <p class="display-6">{{ past_count }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+  <a href="{{ url_for('main.export_events_csv', start_date=start_date, end_date=end_date) }}"
+  class="btn btn-outline-success mb-4">
+  Export to CSV
+  </a>
+<h4 class="mt-5">Events by Type</h4>
+<canvas id="typeChart" width="400" height="150"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx = document.getElementById('typeChart').getContext('2d');
+  const typeChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: {{ event_type_counts.keys()|list|tojson }},
+      datasets: [{
+        label: 'Event Count',
+        data: {{ event_type_counts.values()|list|tojson }},
+        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+</script>
+<h4 class="mt-5">Event Type Distribution</h4>
+<canvas id="typePieChart" width="400" height="150"></canvas>
+
+<script>
+  const pieCtx = document.getElementById('typePieChart').getContext('2d');
+  const typePieChart = new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+      labels: {{ event_type_counts.keys()|list|tojson }},
+      datasets: [{
+        data: {{ event_type_counts.values()|list|tojson }},
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.6)',
+          'rgba(54, 162, 235, 0.6)',
+          'rgba(255, 206, 86, 0.6)',
+          'rgba(75, 192, 192, 0.6)',
+          'rgba(153, 102, 255, 0.6)'
+        ]
+      }]
+    }
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Users for {{ organizer.name }}</h2>
+
+{% if users %}
+<ul class="list-group">
+  {% for user in users %}
+    <li class="list-group-item">
+      {{ user.username }} ({{ user.email }})
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p class="text-muted">No users assigned to this organizer.</p>
+{% endif %}
+
+<a href="{{ url_for('main.manage_organizers') }}" class="btn btn-secondary mt-3">Back</a>
+{% endblock %}

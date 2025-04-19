@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="batch-import">
+        <h1>Batch Event Import</h1>
+        
+        <div class="instructions">
+            <h3>Instructions:</h3>
+            <ol>
+                <li>Download the <a href="{{ url_for('static', filename='templates/events_import_template.csv') }}">CSV template</a></li>
+                <li>Fill in your event data</li>
+                <li>Upload the completed CSV file below</li>
+            </ol>
+            
+            <p><strong>Note:</strong> The CSV file must include these columns (in any order):</p>
+            <ul>
+                <li>title (required)</li>
+                <li>description (required)</li>
+                <li>event_type (default: conference)</li>
+                <li>tags (comma separated)</li>
+                <li>start_time (format: YYYY-MM-DD HH:MM:SS)</li>
+                <li>end_time (format: YYYY-MM-DD HH:MM:SS)</li>
+                <li>location</li>
+                <li>latitude (optional)</li>
+                <li>longitude (optional)</li>
+                <li>image_url (optional)</li>
+            </ul>
+        </div>
+        
+        <form action="{{ url_for('main.batch_events') }}" method="post" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.csv_file.label }}
+                {{ form.csv_file(class="form-control-file") }}
+                {% for error in form.csv_file.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary") }}
+                <a href="{{ url_for('main.manager_dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

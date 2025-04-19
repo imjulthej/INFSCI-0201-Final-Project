@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Edit Organizer</h2>
+
+<form method="POST">
+  <div class="mb-3">
+    <label class="form-label">Name</label>
+    <input type="text" name="name" class="form-control" value="{{ organizer.name }}" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Description</label>
+    <textarea name="description" class="form-control" rows="3">{{ organizer.description }}</textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">Save Changes</button>
+  <a href="{{ url_for('main.manage_organizers') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
