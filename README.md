@@ -38,14 +38,15 @@ The system follows an MVC architecture based around files for SQLAlchemy models 
 
 ## Installation
 1. Clone the repository.
-2. Create and activate a virtual environment.
+2. Edit .env.example with your specifications.
+3. Create and activate a virtual environment.
 
        python -m venv venv
        source venv/bin/activate
-3. Install dependencies.
+4. Install dependencies.
 
        pip install -r requirements.txt
-4. Set up the database.
+5. Set up the database.
 
        python init_db.py
 6. Run the server.
