@@ -38,7 +38,7 @@ The system follows an MVC architecture based around files for SQLAlchemy models 
 
 ## Installation
 1. Clone the repository.
-2. Edit .env.example with your specifications.
+2. Edit .env.example as .env with your specifications.
 3. Create and activate a virtual environment.
 
        python -m venv venv
